@@ -8,6 +8,8 @@
         "php": "^7.1.3",
         "azate/laravel-telegram-login-auth": "^1.0",
         "fideloper/proxy": "^4.0",
+        "guzzlehttp/guzzle": "^6.3",
+        "irazasyed/telegram-bot-sdk": "^2.0",
         "laravel/framework": "5.7.*",
         "laravel/tinker": "^1.0"
     },

@@ -22,8 +22,19 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\InstagramProfiles whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\InstagramProfiles whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\User[] $followers
  */
 class InstagramProfiles extends Model
 {
-    //
+    protected $dates = [
+        'last_check'
+    ];
+
+    protected $guarded = ['id'];
+
+    public function followers()
+    {
+        return $this->belongsToMany(User::class, 'lnk_users_instagram_profiles', 'instagram_profile_id',
+            'user_id');
+    }
 }
