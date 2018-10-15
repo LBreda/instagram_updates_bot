@@ -19,6 +19,7 @@ class CreateUsersTable extends Migration
             $table->string('last_name')->nullable();
             $table->string('username')->nullable();
             $table->string('telegram_id', 16)->unique();
+            $table->rememberToken();
             $table->timestamps();
         });
     }
