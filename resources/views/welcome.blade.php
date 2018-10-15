@@ -94,7 +94,7 @@
         </div>
 
         <script async src="https://telegram.org/js/telegram-widget.js?4" data-telegram-login="{{ env('TELEGRAM_NAME') }}"
-                data-size="large" data-auth-url="http://{{env('APP_URL')}}/auth/telegram/callback"
+                data-size="large" data-auth-url="{{env('APP_URL')}}/auth/telegram/callback"
                 data-request-access="write"></script>
     </div>
 </div>
