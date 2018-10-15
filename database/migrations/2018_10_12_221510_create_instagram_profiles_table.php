@@ -17,6 +17,8 @@ class CreateInstagramProfilesTable extends Migration
             $table->increments('id');
             $table->string('name');
             $table->string('instagram_id');
+            $table->string('profile_pic', 255)->nullable();
+            $table->boolean('is_private');
             $table->dateTime('last_check');
             $table->softDeletes();
             $table->timestamps();

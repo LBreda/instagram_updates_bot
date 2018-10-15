@@ -23,6 +23,10 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\InstagramProfiles whereUpdatedAt($value)
  * @mixin \Eloquent
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\User[] $followers
+ * @property string|null $profile_pic
+ * @property int $is_private
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\InstagramProfiles whereIsPrivate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\InstagramProfiles whereProfilePic($value)
  */
 class InstagramProfiles extends Model
 {

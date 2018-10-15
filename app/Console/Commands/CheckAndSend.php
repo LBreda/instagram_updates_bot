@@ -46,34 +46,47 @@ class CheckAndSend extends Command
 
         InstagramProfiles::get()->each(function (InstagramProfiles $instagram_profile) use ($client) {
 
-            // Gets the profile page
-            $url = sprintf('https://www.instagram.com/%s/', $instagram_profile->name);
-            $request_time = Carbon::now();
+            // Gets the user's info by id
+            $url = sprintf('https://i.instagram.com/api/v1/users/%s/info/', $instagram_profile->instagram_id);
             $response = $client->request('GET', $url);
 
-            if ($response->getStatusCode() === 200) {
-                // Does magic parsing (sigh)
-                preg_match('/<script type="text\/javascript">window\._sharedData = (.*?)<\/script>/',
-                    (string)$response->getBody(), $response);
-                $response = json_decode(substr($response[1], 0, -1));
+            if($response->getStatusCode() === 200) {
+                // Updates the user's data
+                $ig_user_data = json_decode((string)$response->getBody())->user;
+                $instagram_profile->name = $ig_user_data->username;
+                $instagram_profile->profile_pic = $ig_user_data->profile_pic_url;
+                $instagram_profile->is_private = $ig_user_data->is_private;
+                $instagram_profile->save();
 
-                // Grabs the media list (slurp)
-                $media = $response->entry_data->ProfilePage[0]->graphql->user->edge_owner_to_timeline_media->edges;
+                // Gets the profile page
+                $url = sprintf('https://www.instagram.com/%s/', $instagram_profile->name);
+                $request_time = Carbon::now();
+                $response = $client->request('GET', $url);
 
-                // Sends new media to interested users
-                foreach ($media as $medium) {
-                    if (Carbon::createFromTimestamp($medium->node->taken_at_timestamp)->gt($instagram_profile->last_check)) {
-                        $instagram_profile->followers->each(function (User $user) use ($medium) {
-                            Telegram::sendMessage([
-                                'chat_id' => $user->telegram_id,
-                                'text'    => 'https://instagram.com/p/' . $medium->node->shortcode,
-                            ]);
-                        });
+                if ($response->getStatusCode() === 200 and !$instagram_profile->is_private) {
+                    // Does magic parsing (sigh)
+                    preg_match('/<script type="text\/javascript">window\._sharedData = (.*?)<\/script>/',
+                        (string)$response->getBody(), $response);
+                    $response = json_decode(substr($response[1], 0, -1));
+
+                    // Grabs the media list (slurp)
+                    $media = $response->entry_data->ProfilePage[0]->graphql->user->edge_owner_to_timeline_media->edges;
+
+                    // Sends new media to interested users
+                    foreach ($media as $medium) {
+                        if (Carbon::createFromTimestamp($medium->node->taken_at_timestamp)->gt($instagram_profile->last_check)) {
+                            $instagram_profile->followers->each(function (User $user) use ($medium) {
+                                Telegram::sendMessage([
+                                    'chat_id' => $user->telegram_id,
+                                    'text'    => 'https://instagram.com/p/' . $medium->node->shortcode,
+                                ]);
+                            });
+                        }
                     }
-                }
 
-                // Updates last check
-                $instagram_profile->update(['last_check' => $request_time->format('Y-m-d H:i:s')]);
+                    // Updates last check
+                    $instagram_profile->update(['last_check' => $request_time->format('Y-m-d H:i:s')]);
+                }
             }
         });
     }
