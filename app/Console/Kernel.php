@@ -24,7 +24,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('igud:check-send')->everyFifteenMinutes();
+        $schedule->command('igud:check-send')->everyFifteenMinutes()->withoutOverlapping();
     }
 
     /**
