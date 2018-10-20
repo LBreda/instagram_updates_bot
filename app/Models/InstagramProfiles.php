@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * App\Models\InstagramProfiles
@@ -30,6 +31,8 @@ use Illuminate\Database\Eloquent\Model;
  */
 class InstagramProfiles extends Model
 {
+    use SoftDeletes;
+
     protected $dates = [
         'last_check'
     ];

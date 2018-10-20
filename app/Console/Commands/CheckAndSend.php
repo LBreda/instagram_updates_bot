@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Models\InstagramProfiles;
 use App\Models\User;
 use Carbon\Carbon;
+use GuzzleHttp\Exception\ClientException;
 use Illuminate\Console\Command;
 use GuzzleHttp\Client as Guzzle;
 use Telegram\Bot\Laravel\Facades\Telegram;
@@ -46,11 +47,17 @@ class CheckAndSend extends Command
 
         InstagramProfiles::get()->each(function (InstagramProfiles $instagram_profile) use ($client) {
 
-            // Gets the user's info by id
-            $url = sprintf('https://i.instagram.com/api/v1/users/%s/info/', $instagram_profile->instagram_id);
-            $response = $client->request('GET', $url);
+            try {
+                $url = sprintf('https://i.instagram.com/api/v1/users/%s/info/', $instagram_profile->instagram_id);
+                $response = $client->request('GET', $url);
+            } catch (ClientException $e) {
+                $response = null;
+                if ($e->getCode() === 404) {
+                    $instagram_profile->delete();
+                }
+            }
 
-            if($response->getStatusCode() === 200) {
+            if ($response and $response->getStatusCode() === 200) {
                 // Updates the user's data
                 $ig_user_data = json_decode((string)$response->getBody())->user;
                 $instagram_profile->name = $ig_user_data->username;
