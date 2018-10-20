@@ -47,6 +47,7 @@ class CheckAndSend extends Command
 
         InstagramProfiles::get()->each(function (InstagramProfiles $instagram_profile) use ($client) {
 
+            // Gets the user's info by id
             try {
                 $url = sprintf('https://i.instagram.com/api/v1/users/%s/info/', $instagram_profile->instagram_id);
                 $response = $client->request('GET', $url);
@@ -72,12 +73,16 @@ class CheckAndSend extends Command
 
                 if ($response->getStatusCode() === 200 and !$instagram_profile->is_private) {
                     // Does magic parsing (sigh)
-                    preg_match('/<script type="text\/javascript">window\._sharedData = (.*?)<\/script>/',
-                        (string)$response->getBody(), $response);
-                    $response = json_decode(substr($response[1], 0, -1));
+                    try {
+                        preg_match('/<script type="text\/javascript">window\._sharedData = (.*?)<\/script>/',
+                            (string)$response->getBody(), $response);
+                        $response = json_decode(substr($response[1], 0, -1));
 
-                    // Grabs the media list (slurp)
-                    $media = $response->entry_data->ProfilePage[0]->graphql->user->edge_owner_to_timeline_media->edges;
+                        // Grabs the media list (slurp)
+                        $media = $response->entry_data->ProfilePage[0]->graphql->user->edge_owner_to_timeline_media->edges;
+                    } catch (ClientException $e) {
+                        $media = [];
+                    }
 
                     // Sends new media to interested users
                     foreach ($media as $medium) {
