@@ -67,22 +67,22 @@ class CheckAndSend extends Command
                 $instagram_profile->save();
 
                 // Gets the profile page
-                $url = sprintf('https://www.instagram.com/%s/', $instagram_profile->name);
-                $request_time = Carbon::now();
-                $response = $client->request('GET', $url);
+                try {
+                    $url = sprintf('https://www.instagram.com/%s/', $instagram_profile->name);
+                    $request_time = Carbon::now();
+                    $response = $client->request('GET', $url);
+                } catch (ClientException $e) {
+                    $response = null;
+                }
 
-                if ($response->getStatusCode() === 200 and !$instagram_profile->is_private) {
+                if ($response and $response->getStatusCode() === 200 and !$instagram_profile->is_private) {
                     // Does magic parsing (sigh)
-                    try {
-                        preg_match('/<script type="text\/javascript">window\._sharedData = (.*?)<\/script>/',
-                            (string)$response->getBody(), $response);
-                        $response = json_decode(substr($response[1], 0, -1));
+                    preg_match('/<script type="text\/javascript">window\._sharedData = (.*?)<\/script>/',
+                        (string)$response->getBody(), $response);
+                    $response = json_decode(substr($response[1], 0, -1));
 
-                        // Grabs the media list (slurp)
-                        $media = $response->entry_data->ProfilePage[0]->graphql->user->edge_owner_to_timeline_media->edges;
-                    } catch (ClientException $e) {
-                        $media = [];
-                    }
+                    // Grabs the media list (slurp)
+                    $media = $response->entry_data->ProfilePage[0]->graphql->user->edge_owner_to_timeline_media->edges;
 
                     // Sends new media to interested users
                     foreach ($media as $medium) {
