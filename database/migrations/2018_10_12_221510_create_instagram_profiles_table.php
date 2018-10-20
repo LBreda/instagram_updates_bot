@@ -16,7 +16,7 @@ class CreateInstagramProfilesTable extends Migration
         Schema::create('instagram_profiles', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name');
-            $table->string('instagram_id');
+            $table->string('instagram_id', 16)->unique();
             $table->string('profile_pic', 255)->nullable();
             $table->boolean('is_private');
             $table->dateTime('last_check');
