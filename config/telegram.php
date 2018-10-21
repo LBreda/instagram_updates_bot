@@ -33,11 +33,10 @@ return [
     */
     'bots'                         => [
         'instagramBot' => [
-            'username'            => env('TELEGRAM_NAME'),
-            'token'               => env('TELEGRAM_KEY', 'YOUR-BOT-TOKEN'),
-            'certificate_path'    => env('TELEGRAM_CERTIFICATE_PATH', 'YOUR-CERTIFICATE-PATH'),
-            //'webhook_url'         => env('TELEGRAM_WEBHOOK_URL', 'YOUR-BOT-WEBHOOK-URL'),
-            'commands'            => [
+            'username'    => env('TELEGRAM_BOT_NAME'),
+            'token'       => env('TELEGRAM_BOT_TOKEN'),
+            'webhook_url' => env('APP_URL') . '/api/' . env('TELEGRAM_BOT_TOKEN') . '/webhook',
+            'commands'    => [
                 //Acme\Project\Commands\MyTelegramBot\BotCommand::class
             ],
         ],
@@ -111,7 +110,7 @@ return [
     |
     */
     'commands'                     => [
-       // Telegram\Bot\Commands\HelpCommand::class,
+        // Telegram\Bot\Commands\HelpCommand::class,
     ],
 
     /*

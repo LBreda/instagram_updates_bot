@@ -17,4 +17,4 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('/' . env('TELEGRAM_KEY') . '/webhook', 'UpdatesController@updates');
+Route::get('/' . env('TELEGRAM_BOT_TOKEN') . '/webhook', 'UpdatesController@updates');

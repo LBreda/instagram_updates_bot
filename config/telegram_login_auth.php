@@ -1,4 +1,4 @@
 <?php
 return [
-    'token' => env('TELEGRAM_KEY', ''),
+    'token' => env('TELEGRAM_BOT_TOKEN', ''),
 ];
