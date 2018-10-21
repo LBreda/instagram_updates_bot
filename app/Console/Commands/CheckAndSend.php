@@ -6,6 +6,7 @@ use App\Models\InstagramProfiles;
 use App\Models\User;
 use Carbon\Carbon;
 use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\RequestException;
 use Illuminate\Console\Command;
 use GuzzleHttp\Client as Guzzle;
 use Telegram\Bot\Laravel\Facades\Telegram;
@@ -47,32 +48,46 @@ class CheckAndSend extends Command
 
         InstagramProfiles::get()->each(function (InstagramProfiles $instagram_profile) use ($client) {
 
-            // Gets the user's info by id
+            // Gets the profile info by id
             try {
                 $url = sprintf('https://i.instagram.com/api/v1/users/%s/info/', $instagram_profile->instagram_id);
                 $response = $client->request('GET', $url);
+                if ($this->option('verbose')) {
+                    $this->info("Retrieved info for {$instagram_profile->instagram_id} ({$instagram_profile->name})");
+                }
             } catch (ClientException $e) {
                 $response = null;
                 if ($e->getCode() === 404) {
                     $instagram_profile->delete();
+                    if ($this->option('verbose')) {
+                        $this->error("Deleted {$instagram_profile->instagram_id} ({$instagram_profile->name}): not found");
+                    }
                 }
             }
 
             if ($response and $response->getStatusCode() === 200) {
-                // Updates the user's data
+                // Updates the profile data
                 $ig_user_data = json_decode((string)$response->getBody())->user;
                 $instagram_profile->name = $ig_user_data->username;
                 $instagram_profile->profile_pic = $ig_user_data->profile_pic_url;
                 $instagram_profile->is_private = $ig_user_data->is_private;
                 $instagram_profile->save();
+                if ($this->option('verbose')) {
+                    $this->info("Updated info for {$instagram_profile->instagram_id} ({$instagram_profile->name})");
+                }
 
-                if(!$instagram_profile->is_private) {
+                if (!$instagram_profile->is_private) {
                     // Gets the profile page
                     $request_time = Carbon::now();
                     try {
                         $url = sprintf('https://www.instagram.com/%s/', $instagram_profile->name);
                         $response = $client->request('GET', $url);
+                        if ($this->option('verbose')) {
+                            $this->info("Retrieved media for {$instagram_profile->instagram_id} ({$instagram_profile->name})");
+                        }
                     } catch (ClientException $e) {
+                        $response = null;
+                    } catch (RequestException $e) {
                         $response = null;
                     }
 
@@ -88,11 +103,17 @@ class CheckAndSend extends Command
                         // Sends new media to interested users
                         foreach ($media as $medium) {
                             if (Carbon::createFromTimestamp($medium->node->taken_at_timestamp)->gt($instagram_profile->last_check)) {
-                                $instagram_profile->followers->each(function (User $user) use ($medium) {
+                                $instagram_profile->followers->each(function (User $user) use (
+                                    $medium,
+                                    $instagram_profile
+                                ) {
                                     Telegram::sendMessage([
                                         'chat_id' => $user->telegram_id,
                                         'text'    => 'https://instagram.com/p/' . $medium->node->shortcode,
                                     ]);
+                                    if ($this->option('verbose')) {
+                                        $this->info("Sent new media for {$instagram_profile->instagram_id} ({$instagram_profile->name}) to {$user->telegram_id}");
+                                    }
                                 });
                             }
                         }
