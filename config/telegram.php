@@ -37,7 +37,7 @@ return [
             'token'       => env('TELEGRAM_BOT_TOKEN'),
             'webhook_url' => env('APP_URL') . '/api/' . env('TELEGRAM_BOT_TOKEN') . '/webhook',
             'commands'    => [
-                //Acme\Project\Commands\MyTelegramBot\BotCommand::class
+                \App\TelegramCommands\StartCommand::class,
             ],
         ],
     ],

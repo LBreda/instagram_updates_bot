@@ -15,7 +15,7 @@ class UpdatesController extends Controller
      */
     public function updates(): string
     {
-        $updates = Telegram::getWebhookUpdates();
+        $updates = Telegram::commandsHandler(true);
         return 'ok';
     }
 }
