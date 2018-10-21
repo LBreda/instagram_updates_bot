@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Telegram\Bot\Laravel\Facades\Telegram;
 
 class UpdatesController extends Controller
 {
@@ -15,5 +16,6 @@ class UpdatesController extends Controller
     public function updates(): string
     {
         $updates = Telegram::getWebhookUpdates();
+        return 'ok';
     }
 }

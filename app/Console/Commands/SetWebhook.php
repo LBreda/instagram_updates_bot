@@ -5,7 +5,7 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use Telegram\Bot\Laravel\Facades\Telegram;
 
-class CheckAndSend extends Command
+class SetWebHook extends Command
 {
     /**
      * The name and signature of the console command.
@@ -38,14 +38,14 @@ class CheckAndSend extends Command
      */
     public function handle()
     {
-        $response = Telegram::setWebhook([
-            'url' => env('APP_URL') . '/api/' . env('TELEGRAM_KEY') . '/webhook',
-        ]);
+        $url = env('APP_URL') . '/api/' . env('TELEGRAM_KEY') . '/webhook';
 
-        if($response->ok) {
-            $this->info($response->description);
+        $response = Telegram::setWebhook(['url' => $url]);
+
+        if($response) {
+            $this->info("Webhook set to {$url}");
         } else {
-            $this->error($response->description);
+            $this->error("Error setting webhook to {$url}");
         }
     }
 }
