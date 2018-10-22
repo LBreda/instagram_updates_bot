@@ -11,10 +11,12 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
+Route::get('/login', function () {
+    return view('auth.login');
 });
 
 Route::get('auth/telegram/callback', 'Auth\TelegramController@handleTelegramCallback')->name('auth.telegram.handle');
 
-Route::get('/home', 'HomeController@index')->name('home');
+Route::get('/', 'HomeController@index')->name('home');
+Route::resource('instagramProfiles', 'InstagramProfilesController')->except(['edit', 'update']);
+Route::get('/instagram', 'HomeController@index')->name('home');

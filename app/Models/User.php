@@ -30,6 +30,13 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereLastName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereUsername($value)
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\InstagramProfiles[] $followedProfiles
+ * @property string|null $deleted_at
+ * @method static bool|null forceDelete()
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\User onlyTrashed()
+ * @method static bool|null restore()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereDeletedAt($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\User withTrashed()
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\User withoutTrashed()
  */
 class User extends Authenticatable
 {
@@ -52,5 +59,16 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(InstagramProfiles::class, 'lnk_users_instagram_profiles', 'user_id',
             'instagram_profile_id');
+    }
+
+    public function getNameAttribute(): string
+    {
+        if ($this->first_name or $this->last_name) {
+            return trim($this->first_name . ' ' . $this->last_name);
+        } elseif ($this->username) {
+            return '@' . $this->username;
+        } else {
+            return $this->telegram_id;
+        }
     }
 }

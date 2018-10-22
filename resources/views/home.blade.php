@@ -1,23 +1,20 @@
 @extends('layouts.app')
 
+@section('title', 'Home')
+
 @section('content')
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header">Dashboard</div>
-
-                <div class="card-body">
-                    @if (session('status'))
-                        <div class="alert alert-success" role="alert">
-                            {{ session('status') }}
+    <div class="row">
+        <div class="col-3">
+            <div class="stats-small stats-small--1 card card-small">
+                <div class="card-body p-0 d-flex">
+                    <div class="d-flex flex-column m-auto">
+                        <div class="stats-small__data text-center">
+                            <span class="stats-small__label text-uppercase">Followed profiles</span>
+                            <h6 class="stats-small__value count my-3">{{ Auth::user()->followedProfiles->count() }}</h6>
                         </div>
-                    @endif
-
-                    You are logged in!
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 @endsection

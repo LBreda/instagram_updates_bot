@@ -69,6 +69,7 @@ class CheckAndSend extends Command
                 // Updates the profile data
                 $ig_user_data = json_decode((string)$response->getBody())->user;
                 $instagram_profile->name = $ig_user_data->username;
+                $instagram_profile->full_name = $ig_user_data->full_name;
                 $instagram_profile->profile_pic = $ig_user_data->profile_pic_url;
                 $instagram_profile->is_private = $ig_user_data->is_private;
                 $instagram_profile->save();

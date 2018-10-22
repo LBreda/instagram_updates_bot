@@ -28,6 +28,13 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property int $is_private
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\InstagramProfiles whereIsPrivate($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\InstagramProfiles whereProfilePic($value)
+ * @property string|null $full_name
+ * @method static bool|null forceDelete()
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\InstagramProfiles onlyTrashed()
+ * @method static bool|null restore()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\InstagramProfiles whereFullName($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\InstagramProfiles withTrashed()
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\InstagramProfiles withoutTrashed()
  */
 class InstagramProfiles extends Model
 {
