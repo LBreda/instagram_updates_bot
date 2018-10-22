@@ -7,8 +7,8 @@
         <div class="card">
             <div class="card-body">
                 <script async src="https://telegram.org/js/telegram-widget.js?4"
-                        data-telegram-login="InstagramUpdatesBot" data-size="large"
-                        data-auth-url="http://igud.local/auth/telegram/callback" data-request-access="write"></script>
+                        data-telegram-login="{{ env('TELEGRAM_BOT_NAME') }}" data-size="large"
+                        data-auth-url="{{ env('APP_URL') }}/auth/telegram/callback" data-request-access="write"></script>
             </div>
         </div>
     </div>
