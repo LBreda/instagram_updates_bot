@@ -13,7 +13,7 @@
 
 Route::get('/login', function () {
     return view('auth.login');
-});
+})->name('login');
 
 Route::get('auth/telegram/callback', 'Auth\TelegramController@handleTelegramCallback')->name('auth.telegram.handle');
 
