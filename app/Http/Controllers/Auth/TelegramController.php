@@ -33,7 +33,6 @@ class TelegramController extends Controller
     {
         if ($this->telegram->validate()) {
             $telegramUser = $this->telegram->user();
-            dump($telegramUser);
             $existingUser = User::where('telegram_id', $telegramUser['id'])->first();
 
             if ($existingUser) {
@@ -46,9 +45,10 @@ class TelegramController extends Controller
                     'username'    => $telegramUser['username'] ?? '',
                 ]);
                 $newUser->save();
+                auth()->login($newUser, true);
             }
         }
 
-        return redirect('/');
+        return route('home');
     }
 }
