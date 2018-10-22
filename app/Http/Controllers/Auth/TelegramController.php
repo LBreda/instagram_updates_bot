@@ -49,6 +49,6 @@ class TelegramController extends Controller
             }
         }
 
-        return route('home');
+        return redirect()->route('home');
     }
 }
