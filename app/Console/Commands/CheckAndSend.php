@@ -58,6 +58,12 @@ class CheckAndSend extends Command
             } catch (ClientException $e) {
                 $response = null;
                 if ($e->getCode() === 404) {
+                    $instagram_profile->followers->each(function (User $user) use ($instagram_profile) {
+                        Telegram::sendMessage([
+                            'chat_id' => $user->telegram_id,
+                            'text'    => "🤖 Removed the {$instagram_profile->name}'s profile. It was probably deleted from Instagram.",
+                        ]);
+                    });
                     $instagram_profile->delete();
                     if ($this->option('verbose')) {
                         $this->error("Deleted {$instagram_profile->instagram_id} ({$instagram_profile->name}): not found");
