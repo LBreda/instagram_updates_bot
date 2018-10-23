@@ -3,7 +3,7 @@
 @section('title', 'Login')
 
 @section('content')
-    <div class="col-8">
+    <div class="col-12 col-lg-8">
         <div class="card">
             <div class="card-body">
                 <script async src="https://telegram.org/js/telegram-widget.js?4"

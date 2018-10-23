@@ -7,9 +7,9 @@
 </head>
 <body class="h-100">
 
-<div class="container">
-    <div class="row">
-        <main class="main-content col-lg-12 d-flex justify-content-center">
+<div class="container h-100">
+    <div class="row h-100">
+        <main class="main-content col-lg-12 d-flex justify-content-center m-auto">
             @yield('content')
         </main>
     </div>
