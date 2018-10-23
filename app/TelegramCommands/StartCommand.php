@@ -43,7 +43,7 @@ class StartCommand extends Command
                 'deleted_at' => null,
             ]);
             $user->save();
-            $this->replyWithMessage(['text' => ':robot: Hello! Welcome! You can manage your account on ' . env('APP_URL')]);
+            $this->replyWithMessage(['text' => '🤖 Hello! Welcome! You can manage your account on ' . env('APP_URL')]);
         }
     }
 }
