@@ -10,8 +10,12 @@
                     <span class="d-none d-md-inline-block">{{ Auth::user()->name }}</span>
                 </a>
                 <div class="dropdown-menu dropdown-menu-small">
-                    <a class="dropdown-item text-danger" href="#">
-                        <i class="material-icons text-danger">&#xE879;</i> Logout </a>
+                    <form action="{{ route('logout') }}" method="post">
+                        @csrf
+                        <button class="btn btn-link" type="submit">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </button>
+                    </form>
                 </div>
             </li>
         </ul>

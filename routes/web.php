@@ -14,6 +14,7 @@
 Route::get('/login', function () {
     return view('auth.login');
 })->name('login');
+Route::post('/logout', 'Auth\LoginController@logout')->name('logout');
 
 Route::get('auth/telegram/callback', 'Auth\TelegramController@handleTelegramCallback')->name('auth.telegram.handle');
 
