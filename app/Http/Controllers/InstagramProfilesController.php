@@ -87,7 +87,16 @@ class InstagramProfilesController extends Controller
             preg_match('/<script type="text\/javascript">window\._sharedData = (.*?)<\/script>/',
                 (string)$response->getBody(), $response);
             $profile_data = json_decode(substr($response[1], 0, -1));
-            $graphql = $profile_data->entry_data->ProfilePage[0]->graphql;
+
+            $graphql = $profile_data->entry_data->ProfilePage[0]->graphql ?? null;
+
+            if(!$graphql) {
+                $res = [
+                    'status'   => false,
+                    'messages' => ["The URL is not an Instagram profile page"],
+                ];
+                return response()->json($res, 400);
+            }
 
             // Check for the user in the database, updates it if present or creates it if not present
             $db_profile = InstagramProfiles::where('instagram_id', '=', $graphql->user->id)
