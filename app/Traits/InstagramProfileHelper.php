@@ -27,21 +27,21 @@ trait InstagramProfileHelper
             $res = [
                 'status'  => false,
                 'message' => $e->getMessage(),
-                'code' => $e->getCode(),
+                'code'    => $e->getCode(),
             ];
             return $res;
         } catch (RequestException $e) {
             $res = [
                 'status'  => false,
                 'message' => $e->getMessage(),
-                'code' => $e->getCode(),
+                'code'    => $e->getCode(),
             ];
             return $res;
         } catch (GuzzleException $e) {
             $res = [
                 'status'  => false,
                 'message' => $e->getMessage(),
-                'code' => $e->getCode(),
+                'code'    => $e->getCode(),
             ];
             return $res;
         }
@@ -51,7 +51,17 @@ trait InstagramProfileHelper
             preg_match('/<script type="text\/javascript">window\._sharedData = (.*?)<\/script>/',
                 (string)$response->getBody(), $response);
             $profile_data = json_decode(substr($response[1], 0, -1));
-            $graphql = $profile_data->entry_data->ProfilePage[0]->graphql;
+
+            $graphql = $profile_data->entry_data->ProfilePage[0]->graphql ?? null;
+
+            if (!$graphql) {
+                $res = [
+                    'status'   => false,
+                    'messages' => ["The URL is not an Instagram profile page"],
+                    'code'     => 400,
+                ];
+                return $res;
+            }
 
             // Check for the user in the database, updates it if present or creates it if not present
             $db_profile = InstagramProfiles::where('instagram_id', '=', $graphql->user->id)
@@ -65,7 +75,7 @@ trait InstagramProfileHelper
                     'is_private'   => $graphql->user->is_private,
                     'deleted_at'   => null,
                 ]);
-                if($db_profile->followers->count() == 1) {
+                if ($db_profile->followers->count() == 1) {
                     $db_profile->update(['last_check' => Carbon::now()]);
                 }
             } else {
@@ -85,7 +95,7 @@ trait InstagramProfileHelper
                 $res = [
                     'status'   => true,
                     'messages' => ['You already added this profile'],
-                    'code' => 200,
+                    'code'     => 200,
                 ];
                 return $res;
             } else {
@@ -94,7 +104,7 @@ trait InstagramProfileHelper
                     'status'   => true,
                     'messages' => ['Instagram profile added'],
                     'profile'  => $db_profile->toArray(),
-                    'code' => 201,
+                    'code'     => 201,
                 ];
                 return $res;
             }
@@ -103,7 +113,7 @@ trait InstagramProfileHelper
             $res = [
                 'status'   => false,
                 'messages' => ['Error retrieving profile'],
-                'code' => $response->getStatusCode(),
+                'code'     => $response->getStatusCode(),
             ];
             return $res;
         }
