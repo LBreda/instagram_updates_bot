@@ -12,6 +12,7 @@
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
 <link rel="stylesheet" id="main-stylesheet" data-version="1.1.0" href="{{ asset('css/shards-dashboards.1.1.0.min.css') }}">
+<link rel="stylesheet" data-version="1.1.0" href="{{ asset('css/custom.css') }}">
 <link rel="stylesheet" data-version="1.1.0" href="{{ asset('css/extras.1.1.0.min.css') }}">
 <link rel="stylesheet" data-version="1.1.0" href="{{ asset('js_modules/toastr/build/toastr.min.css') }}">
 <script async defer src="https://buttons.github.io/buttons.js"></script>

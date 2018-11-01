@@ -26,4 +26,7 @@ Route::get('auth/telegram/callback', 'Auth\TelegramController@handleTelegramCall
 Route::get('/', 'HomeController@index')->name('home');
 Route::resource('instagramProfiles', 'InstagramProfilesController')->except(['edit', 'update']);
 Route::get('/instagram', 'HomeController@index')->name('home');
+Route::get('/account', 'AccountController@index')->name('account.index');
+Route::get('/account/download', 'AccountController@download')->name('account.download');
+Route::delete('/account', 'AccountController@destroy')->name('account.delete');
 Route::get('/privacy', 'PrivacyController@index')->name('privacy');
