@@ -27,7 +27,7 @@
             <footer class="main-footer d-flex p-2 px-3 bg-white border-top">
                 <ul class="nav">
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Privacy Policy</a>
+                        <a class="nav-link" href="{{ route('privacy') }}">Privacy Policy</a>
                     </li>
                 </ul>
                 <span class="copyright ml-auto my-auto mr-2">Copyright © 2018
@@ -39,11 +39,9 @@
 </div>
 
 @section('modals')
-    {{-- @include('layouts.modals') --}}
 @show
 @section('scripts')
     @include('layouts.scripts.main')
-    {{-- @include('layouts.scripts.notifications') --}}
 @show
 @yield('core-scripts')
 </body>
