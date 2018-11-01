@@ -21,27 +21,29 @@ class UpdatesController extends Controller
 
         foreach ($updates as $update) {
             if ($update['text'] and $update['from']['id']) {
-                $user = User::find($update['from']['id']);
+                $user = User::where('telegram_id', '=', $update['from']['id'])->first();
 
                 if ($user) {
                     $response = self::addProfile($user, $update['text']);
                     if ($response['status']) {
                         Telegram::sendMessage([
-                            'chat_id' => $update['from']['id'],
-                            'text'    => "🤖 `OK! {$response['message']}`",
+                            'chat_id'    => $update['from']['id'],
+                            'text'       => "🤖 `OK! {$response['message']}`",
+                            'parse_mode' => 'Markdown'
                         ]);
-                    }
-                    else {
+                    } else {
                         Telegram::sendMessage([
-                            'chat_id' => $update['from']['id'],
-                            'text'    => "🤖 `ERROR! {$response['message']}`",
+                            'chat_id'    => $update['from']['id'],
+                            'text'       => "🤖 `ERROR! {$response['message']}`",
+                            'parse_mode' => 'Markdown'
                         ]);
                     }
 
                 } else {
                     Telegram::sendMessage([
-                        'chat_id' => $update['from']['id'],
-                        'text'    => "🤖 `I can't find your account. You have to subscribe on " . env('APP_URL') . "`",
+                        'chat_id'    => $update['from']['id'],
+                        'text'       => "🤖 `I can't find your account. You have to subscribe on " . env('APP_URL') . "`",
+                        'parse_mode' => 'Markdown'
                     ]);
                 }
             }
