@@ -19,7 +19,7 @@ class UpdatesController extends Controller
     {
         $updates = Telegram::commandsHandler(true);
 
-        $pattern = '/https?:\/\/(www\.)?instagram\.com\/([A-Za-z0-9_](?:(?:[A-Za-z0-9_]|(?:\.(?!\.))){0,28}(?:[A-Za-z0-9_]))?)/'
+        $pattern = '/https?:\/\/(www\.)?instagram\.com\/([A-Za-z0-9_](?:(?:[A-Za-z0-9_]|(?:\.(?!\.))){0,28}(?:[A-Za-z0-9_]))?)/';
 
         foreach ($updates as $update) {
             if ($update['text'] and preg_match($pattern, $update['text']) and $update['from']['id']) {
