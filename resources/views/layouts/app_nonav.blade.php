@@ -16,11 +16,9 @@
 </div>
 
 @section('modals')
-    {{-- @include('layouts.modals') --}}
 @show
 @section('scripts')
     @include('layouts.scripts.main')
-    {{-- @include('layouts.scripts.notifications') --}}
 @show
 @yield('core-scripts')
 </body>

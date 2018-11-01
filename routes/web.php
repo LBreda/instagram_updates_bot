@@ -12,7 +12,12 @@
 */
 
 Route::get('/login', function () {
-    return view('auth.login');
+    try {
+        $privacy_data = \Storage::disk('local')->get('privacy_policy.md');
+    } catch (FileNotFoundException $e) {
+        $privacy_data = "Create a `privacy_policy.md` file in /storage/app.";
+    }
+    return view('auth.login', compact('privacy_data'));
 })->name('login');
 Route::post('/logout', 'Auth\LoginController@logout')->name('logout');
 
