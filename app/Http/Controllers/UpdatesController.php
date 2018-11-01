@@ -30,13 +30,13 @@ class UpdatesController extends Controller
                     if ($response['status']) {
                         Telegram::sendMessage([
                             'chat_id'    => $update['from']['id'],
-                            'text'       => "🤖 `OK! {$message}`",
+                            'text'       => "🤖 `OK! {$message}.`",
                             'parse_mode' => 'Markdown'
                         ]);
                     } else {
                         Telegram::sendMessage([
                             'chat_id'    => $update['from']['id'],
-                            'text'       => "🤖 `ERROR! {$message}`",
+                            'text'       => "🤖 `ERROR! {$message}.`",
                             'parse_mode' => 'Markdown'
                         ]);
                     }
