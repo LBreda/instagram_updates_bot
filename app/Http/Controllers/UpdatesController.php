@@ -25,16 +25,18 @@ class UpdatesController extends Controller
 
                 if ($user) {
                     $response = self::addProfile($user, $update['text']);
+                    $message = implode(', ', $response['messages']);
+
                     if ($response['status']) {
                         Telegram::sendMessage([
                             'chat_id'    => $update['from']['id'],
-                            'text'       => "🤖 `OK! {$response['message']}`",
+                            'text'       => "🤖 `OK! {$message}`",
                             'parse_mode' => 'Markdown'
                         ]);
                     } else {
                         Telegram::sendMessage([
                             'chat_id'    => $update['from']['id'],
-                            'text'       => "🤖 `ERROR! {$response['message']}`",
+                            'text'       => "🤖 `ERROR! {$message}`",
                             'parse_mode' => 'Markdown'
                         ]);
                     }
