@@ -114,6 +114,7 @@
                             <label for="profile">Instagram profile URL</label>
                             <input required id="profile" type="url" class="form-control" name="profile">
                         </div>
+                        <p>Note: You can also add new profiles pasting the URL in the bot's chat.</p>
                     </div>
                     <div class="modal-footer">
                         <button id="addIgCancel" type="button" class="btn btn-default" data-dismiss="modal">
