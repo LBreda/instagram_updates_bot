@@ -6,7 +6,7 @@
     <div class="col-12">
         <div class="row">
             <div class="col-12 col-lg-8 ml-auto mr-auto mt-auto text-center mb-3">
-                <h1>Instagram Updates</h1>
+                <h1>InstagramUpdates</h1>
             </div>
         </div>
         <div class="row">
