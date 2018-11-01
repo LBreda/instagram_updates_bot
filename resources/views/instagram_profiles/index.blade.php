@@ -27,9 +27,9 @@
                             <th scope="col" style="width: 64px" class="text-center"><i
                                         class="fas fa-user-circle mr-2"></i></th>
                             <th scope="col" class="border-0">Username</th>
-                            <th scope="col" class="border-0" style="width: 100%">Name</th>
-                            <th scope="col">Status</th>
-                            <th scope="col">
+                            <th scope="col" class="border-0 d-none d-sm-table-cell" style="width: 100%">Name</th>
+                            <th scope="col" class="border-0 d-none d-sm-table-cell">Status</th>
+                            <th scope="col" class="border-0">
                                 <button class="btn btn-primary add-ig" type="button" data-toggle="modal"
                                         data-target="#addIgModal"><i class="fas fa-plus"></i></button>
                             </th>

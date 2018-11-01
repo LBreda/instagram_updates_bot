@@ -6,17 +6,17 @@
         <td>
             <a href="https://instagram.com/{{ $profile->name  }}">{{ '@'.$profile->name }}</a>
         </td>
-        <td>
+        <td class="d-none d-sm-table-cell">
             {{ $profile->full_name }}
         </td>
-        <td>
-                                    <span class="badge badge-{{ $profile->is_private ? 'danger' : 'success' }}">
-                                        @if($profile->is_private)
-                                            private
-                                        @else
-                                            ok
-                                        @endif
-                                    </span>
+        <td class="d-none d-sm-table-cell">
+            <span class="badge badge-{{ $profile->is_private ? 'danger' : 'success' }}">
+                @if($profile->is_private)
+                    private
+                @else
+                    ok
+                @endif
+            </span>
         </td>
         <th scope="col">
             <button class="btn btn-danger" type="button" data-toggle="modal" data-target="#removeIgModal"
