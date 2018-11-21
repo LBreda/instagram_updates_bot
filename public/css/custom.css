@@ -1,0 +1,11 @@
+p.data-display-box, p.computed-display-box {
+    background-color: rgb(245, 246, 247);;
+    border: 1px solid rgb(225, 229, 235);
+    color: rgb(73, 80, 87);
+    min-height: 35.5px;
+    line-height: 19.5px;
+    font-size: 13px;
+    padding: 9px 10px 7px 10px;
+    border-radius: 4px;
+    margin: 0 0;
+}
