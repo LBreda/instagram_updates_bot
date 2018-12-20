@@ -25,23 +25,23 @@ trait InstagramProfileHelper
             $response = $client->request('GET', $url);
         } catch (ClientException $e) {
             $res = [
-                'status'  => false,
-                'message' => $e->getMessage(),
-                'code'    => $e->getCode(),
+                'status'   => false,
+                'messages' => [$e->getMessage()],
+                'code'     => $e->getCode(),
             ];
             return $res;
         } catch (RequestException $e) {
             $res = [
-                'status'  => false,
-                'message' => $e->getMessage(),
-                'code'    => $e->getCode(),
+                'status'   => false,
+                'messages' => [$e->getMessage()],
+                'code'     => $e->getCode(),
             ];
             return $res;
         } catch (GuzzleException $e) {
             $res = [
-                'status'  => false,
-                'message' => $e->getMessage(),
-                'code'    => $e->getCode(),
+                'status'   => false,
+                'messages' => [$e->getMessage()],
+                'code'     => $e->getCode(),
             ];
             return $res;
         }

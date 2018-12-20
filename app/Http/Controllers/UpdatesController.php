@@ -22,7 +22,7 @@ class UpdatesController extends Controller
         $pattern = '/https?:\/\/(www\.)?instagram\.com\/([A-Za-z0-9_](?:(?:[A-Za-z0-9_]|(?:\.(?!\.))){0,28}(?:[A-Za-z0-9_]))?)/';
 
         foreach ($updates as $update) {
-            if ($update['text'] and preg_match($pattern, $update['text']) and $update['from']['id']) {
+            if (is_array($update) and array_key_exists('text', $update) and preg_match($pattern, $update['text']) and $update['from']['id']) {
                 $user = User::where('telegram_id', '=', $update['from']['id'])->first();
 
                 if ($user) {
