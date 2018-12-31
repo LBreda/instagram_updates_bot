@@ -35,6 +35,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\InstagramProfiles whereFullName($value)
  * @method static \Illuminate\Database\Query\Builder|\App\Models\InstagramProfiles withTrashed()
  * @method static \Illuminate\Database\Query\Builder|\App\Models\InstagramProfiles withoutTrashed()
+ * @property mixed|null $last_error
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\InstagramProfiles whereLastError($value)
  */
 class InstagramProfiles extends Model
 {
