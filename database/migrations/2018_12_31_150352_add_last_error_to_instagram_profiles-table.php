@@ -14,7 +14,7 @@ class AddLastErrorToInstagramProfilesTable extends Migration
     public function up()
     {
         Schema::table('instagram_profiles', function (Blueprint $table) {
-            $table->json('last_error')->after('last_check')->nullable();
+            $table->text('last_error')->after('last_check')->nullable();
         });
     }
 
