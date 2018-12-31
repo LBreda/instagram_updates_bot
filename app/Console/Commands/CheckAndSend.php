@@ -70,24 +70,24 @@ class CheckAndSend extends Command
                         $this->error("Deleted {$instagram_profile->instagram_id} ({$instagram_profile->name}): not found");
                     }
                 } else {
-                    $instagram_profile->last_error = [
+                    $instagram_profile->last_error = json_encode([
                         'date'      => Carbon::now(),
                         'exception' => $e->getMessage(),
-                    ];
+                    ]);
                     $instagram_profile->save();
                 }
             } catch (ServerException $e) {
-                $instagram_profile->last_error = [
+                $instagram_profile->last_error = json_encode([
                     'date'      => Carbon::now(),
                     'exception' => $e->getMessage(),
-                ];
+                ]);
                 $instagram_profile->save();
                 $response = null;
             } catch (RequestException $e) {
-                $instagram_profile->last_error = [
+                $instagram_profile->last_error = json_encode([
                     'date'      => Carbon::now(),
                     'exception' => $e->getMessage(),
-                ];
+                ]);
                 $instagram_profile->save();
                 $response = null;
             }
