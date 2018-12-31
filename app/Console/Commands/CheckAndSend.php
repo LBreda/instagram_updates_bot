@@ -47,7 +47,7 @@ class CheckAndSend extends Command
     {
         $client = new Guzzle();
 
-        InstagramProfiles::get()->each(function (InstagramProfiles $instagram_profile) use ($client) {
+        InstagramProfiles::get()->shuffle()->each(function (InstagramProfiles $instagram_profile) use ($client) {
             // Gets the profile page
             $request_time = Carbon::now();
             try {
@@ -69,6 +69,8 @@ class CheckAndSend extends Command
                     if ($this->option('verbose')) {
                         $this->error("Deleted {$instagram_profile->instagram_id} ({$instagram_profile->name}): not found");
                     }
+                } elseif ($e->getCode() === 429) {
+                    sleep(65);
                 } else {
                     $instagram_profile->last_error = json_encode([
                         'date'      => Carbon::now(),
