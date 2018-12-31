@@ -10,6 +10,7 @@ use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Exception\ServerException;
 use Illuminate\Console\Command;
 use GuzzleHttp\Client as Guzzle;
+use Telegram\Bot\Exceptions\TelegramResponseException;
 use Telegram\Bot\Laravel\Facades\Telegram;
 
 class CheckAndSend extends Command
@@ -60,10 +61,15 @@ class CheckAndSend extends Command
                 $response = null;
                 if ($e->getCode() === 404) {
                     $instagram_profile->followers->each(function (User $user) use ($instagram_profile) {
-                        Telegram::sendMessage([
-                            'chat_id' => $user->telegram_id,
-                            'text'    => "🤖 Removed the {$instagram_profile->name}'s profile. It was probably deleted from Instagram or renamed.",
-                        ]);
+                        try {
+                            $message = [
+                                'chat_id' => $user->telegram_id,
+                                'text'    => "🤖 Removed the {$instagram_profile->name}'s profile. It was probably deleted from Instagram or renamed.",
+                            ];
+                            Telegram::sendMessage($message);
+                        } catch (TelegramResponseException $e) {
+                            $this->error($e->getMessage() . " - SendMessage to id {$message['chat_id']} - Message: '{$message['text']}'");
+                        }
                     });
                     $instagram_profile->delete();
                     if ($this->option('verbose')) {
@@ -121,12 +127,17 @@ class CheckAndSend extends Command
                                 $medium,
                                 $instagram_profile
                             ) {
-                                Telegram::sendMessage([
-                                    'chat_id' => $user->telegram_id,
-                                    'text'    => 'https://instagram.com/p/' . $medium->node->shortcode,
-                                ]);
-                                if ($this->option('verbose')) {
-                                    $this->info("Sent new media for {$instagram_profile->instagram_id} ({$instagram_profile->name}) to {$user->telegram_id}");
+                                try {
+                                    $message = [
+                                        'chat_id' => $user->telegram_id,
+                                        'text'    => 'https://instagram.com/p/' . $medium->node->shortcode,
+                                    ];
+                                    Telegram::sendMessage($message);
+                                    if ($this->option('verbose')) {
+                                        $this->info("Sent new media for {$instagram_profile->instagram_id} ({$instagram_profile->name}) to {$user->telegram_id}");
+                                    }
+                                } catch (TelegramResponseException $e) {
+                                    $this->error($e->getMessage() . " - SendMessage to id {$message['chat_id']} - Message: '{$message['text']}'");
                                 }
                             });
                         }
