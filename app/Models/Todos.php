@@ -37,23 +37,27 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @method static \Illuminate\Database\Query\Builder|\App\Models\InstagramProfiles withoutTrashed()
  * @property mixed|null $last_error
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\InstagramProfiles whereLastError($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\InstagramProfiles newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\InstagramProfiles newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\InstagramProfiles query()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Todos newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Todos newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Todos query()
+ * @property-read \App\Models\TodoTypes $type
+ * @property string $data
+ * @property int $type_id
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Todos whereData($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Todos whereTypeId($value)
  */
-class InstagramProfiles extends Model
+class Todos extends Model
 {
     use SoftDeletes;
 
-    protected $dates = [
-        'last_check'
-    ];
+    protected $table = 'todo';
+
+    protected $dates = [];
 
     protected $guarded = ['id'];
 
-    public function followers()
+    public function type()
     {
-        return $this->belongsToMany(User::class, 'lnk_users_instagram_profiles', 'instagram_profile_id',
-            'user_id');
+        return $this->belongsTo(TodoTypes::class, 'type_id');
     }
 }
