@@ -3,6 +3,7 @@
 namespace App\Traits;
 
 use App\Models\InstagramProfiles;
+use App\Models\Todos;
 use App\Models\User;
 use Carbon\Carbon;
 use GuzzleHttp\Exception\ClientException;
@@ -24,6 +25,23 @@ trait InstagramProfileHelper
         try {
             $response = $client->request('GET', $url);
         } catch (ClientException $e) {
+            if($e->getCode() === 429) {
+                $todo = new Todos();
+                $todo->data = json_encode((object)[
+                    'user_id' => $user->id,
+                    'url' => $url,
+                ]);
+                $todo->type_id = \Config::get('const.todo_types.add_profile');
+                $todo->save();
+
+                $res = [
+                    'status' => false,
+                    'messages' => ["I'm pretty busy right now. I'll try to add this Instagram profile later and I'll notify you!"],
+                    'code' => $e->getCode(),
+                ];
+                return $res;
+            }
+
             $res = [
                 'status'   => false,
                 'messages' => [$e->getMessage()],

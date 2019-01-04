@@ -3,7 +3,9 @@
 namespace App\Console\Commands;
 
 use App\Models\InstagramProfiles;
+use App\Models\Todos;
 use App\Models\User;
+use App\Traits\InstagramProfileHelper;
 use Carbon\Carbon;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\RequestException;
@@ -15,6 +17,8 @@ use Telegram\Bot\Laravel\Facades\Telegram;
 
 class CheckAndSend extends Command
 {
+    use InstagramProfileHelper;
+
     /**
      * The name and signature of the console command.
      *
@@ -48,6 +52,14 @@ class CheckAndSend extends Command
     {
         $client = new Guzzle();
 
+        // Manages scheduled profile adds
+        Todos::where('type_id', '=', \Config::get('const.todo_types.add_profile'))->each(function (Todos $todo) {
+            $data = json_decode($todo->data);
+            $this->addProfile(User::find($data->user_id), $data->url);
+            $todo->delete();
+        });
+
+        // Gets new posts
         InstagramProfiles::get()->shuffle()->each(function (InstagramProfiles $instagram_profile) use ($client) {
             // Gets the profile page
             $request_time = Carbon::now();
