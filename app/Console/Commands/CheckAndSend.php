@@ -55,8 +55,24 @@ class CheckAndSend extends Command
         // Manages scheduled profile adds
         Todos::where('type_id', '=', \Config::get('const.todo_types.add_profile'))->each(function (Todos $todo) {
             $data = json_decode($todo->data);
-            $this->addProfile(User::find($data->user_id), $data->url);
+            $response = $this->addProfile(User::find($data->user_id), $data->url);
             $todo->delete();
+
+            $message = implode(', ', $response['messages']);
+            $recipient = User::find($data->user_id);
+            if ($response['status']) {
+                Telegram::sendMessage([
+                    'chat_id'    => $recipient->telegram_id,
+                    'text'       => "🤖 `OK! {$message}.`",
+                    'parse_mode' => 'Markdown'
+                ]);
+            } else {
+                Telegram::sendMessage([
+                    'chat_id'    => $recipient->telegram_id,
+                    'text'       => "🤖 `ERROR! {$message}.`",
+                    'parse_mode' => 'Markdown'
+                ]);
+            }
         });
 
         // Gets new posts
