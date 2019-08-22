@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\InstagramProfiles;
+use App\Models\Locks;
 use App\Models\Todos;
 use App\Models\User;
 use App\Traits\InstagramProfileHelper;
@@ -50,6 +51,12 @@ class CheckAndSend extends Command
      */
     public function handle()
     {
+        // Avoids double run
+        if(self::is_locked()) {
+            return;
+        }
+        self::lock();
+
         $client = new Guzzle();
 
         // Manages scheduled profile adds
@@ -64,13 +71,13 @@ class CheckAndSend extends Command
                 Telegram::sendMessage([
                     'chat_id'    => $recipient->telegram_id,
                     'text'       => "🤖 `OK! {$message}.`",
-                    'parse_mode' => 'Markdown'
+                    'parse_mode' => 'Markdown',
                 ]);
             } else {
                 Telegram::sendMessage([
                     'chat_id'    => $recipient->telegram_id,
                     'text'       => "🤖 `ERROR! {$message}.`",
-                    'parse_mode' => 'Markdown'
+                    'parse_mode' => 'Markdown',
                 ]);
             }
         });
@@ -176,5 +183,62 @@ class CheckAndSend extends Command
                 $instagram_profile->update(['last_check' => $request_time->format('Y-m-d H:i:s')]);
             }
         });
+
+        self::unlock();
+    }
+
+    /**
+     * @return bool
+     */
+    private static function is_locked()
+    {
+        $lock_name = 'App\Console\Commands\CheckAndSend';
+        $lock = Locks::where('name', '=', $lock_name)->first();
+
+        if ($lock) {
+            return $lock->status;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     *
+     */
+    private static function unlock()
+    {
+        $lock_name = 'App\Console\Commands\CheckAndSend';
+        $lock = Locks::where('name', '=', $lock_name)->first();
+
+        if ($lock) {
+            $lock->status = false;
+            $lock->save();
+        } else {
+            $lock = new Locks([
+                'name'   => $lock_name,
+                'status' => false,
+            ]);
+            $lock->save();
+        }
+    }
+
+    /**
+     *
+     */
+    private static function lock()
+    {
+        $lock_name = 'App\Console\Commands\CheckAndSend';
+        $lock = Locks::where('name', '=', $lock_name)->first();
+
+        if ($lock) {
+            $lock->status = true;
+            $lock->save();
+        } else {
+            $lock = new Locks([
+                'name'   => $lock_name,
+                'status' => true,
+            ]);
+            $lock->save();
+        }
     }
 }
