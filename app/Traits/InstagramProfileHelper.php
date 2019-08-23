@@ -23,7 +23,16 @@ trait InstagramProfileHelper
         // Trying to retrieve profile information
         $client = new Guzzle();
         try {
-            $response = $client->request('GET', $url);
+            $options = [
+                'headers' => [
+                    'User-Agent' => 'IGUD/' . \Config::get('app.version'),
+                    'Accept'     => '*/*',
+                ],
+            ];
+            if(env('SOCKS5_HOST', false) and env('SOCKS5_PORT', false)) {
+                $options['proxy'] = 'socks5://' . env('SOCKS5_HOST') . ':' . env('SOCKS5_PORT');
+            }
+            $response = $client->request('GET', $url, $options);
         } catch (ClientException $e) {
             if($e->getCode() === 429) {
                 $todo = new Todos();
