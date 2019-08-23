@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\InstagramProfiles;
+use App\Models\Locks;
 use App\Models\Todos;
 use App\Models\User;
 use App\Traits\InstagramProfileHelper;
@@ -50,6 +51,12 @@ class CheckAndSend extends Command
      */
     public function handle()
     {
+        // Avoids double run
+        if (self::is_locked()) {
+            return;
+        }
+        self::lock();
+
         $client = new Guzzle();
 
         // Manages scheduled profile adds
@@ -64,13 +71,13 @@ class CheckAndSend extends Command
                 Telegram::sendMessage([
                     'chat_id'    => $recipient->telegram_id,
                     'text'       => "🤖 `OK! {$message}.`",
-                    'parse_mode' => 'Markdown'
+                    'parse_mode' => 'Markdown',
                 ]);
             } else {
                 Telegram::sendMessage([
                     'chat_id'    => $recipient->telegram_id,
                     'text'       => "🤖 `ERROR! {$message}.`",
-                    'parse_mode' => 'Markdown'
+                    'parse_mode' => 'Markdown',
                 ]);
             }
         });
@@ -81,7 +88,16 @@ class CheckAndSend extends Command
             $request_time = Carbon::now();
             try {
                 $url = sprintf('https://www.instagram.com/%s/', $instagram_profile->name);
-                $response = $client->request('GET', $url);
+                $options = [
+                    'headers' => [
+                        'User-Agent' => 'IGUD/' . \Config::get('app.version'),
+                        'Accept'     => '*/*',
+                    ],
+                ];
+                if(env('SOCKS5_HOST', false) and env('SOCKS5_PORT', false)) {
+                    $options['proxy'] = 'socks5://' . env('SOCKS5_HOST') . ':' . env('SOCKS5_PORT');
+                }
+                $response = $client->request('GET', $url, $options);
                 if ($this->option('verbose')) {
                     $this->info("Retrieved media for {$instagram_profile->instagram_id} ({$instagram_profile->name})");
                 }
@@ -135,7 +151,15 @@ class CheckAndSend extends Command
                 $response = json_decode(substr($response[1], 0, -1));
 
                 // Updates the profile data
-                $ig_user_data = $response->entry_data->ProfilePage[0]->graphql->user;
+                try {
+                    $ig_user_data = $response->entry_data->ProfilePage[0]->graphql->user;
+                } catch (\ErrorException $e) {
+                    self::unlock();
+                    if ($this->option('verbose')) {
+                        $this->error("Not a Instagram Page JSON (1)");
+                    }
+                    return;
+                }
                 $instagram_profile->full_name = $ig_user_data->full_name;
                 $instagram_profile->profile_pic = $ig_user_data->profile_pic_url;
                 $instagram_profile->is_private = $ig_user_data->is_private;
@@ -146,7 +170,15 @@ class CheckAndSend extends Command
 
                 if ($ig_user_data->is_private == false) {
                     // Grabs the media list (slurp)
-                    $media = $response->entry_data->ProfilePage[0]->graphql->user->edge_owner_to_timeline_media->edges;
+                    try {
+                        $media = $response->entry_data->ProfilePage[0]->graphql->user->edge_owner_to_timeline_media->edges;
+                    } catch (\ErrorException $e) {
+                        self::unlock();
+                        if ($this->option('verbose')) {
+                            $this->error("Not a Instagram Page JSON (2)");
+                        }
+                        return;
+                    }
 
                     // Sends new media to interested users
                     foreach ($media as $medium) {
@@ -176,5 +208,62 @@ class CheckAndSend extends Command
                 $instagram_profile->update(['last_check' => $request_time->format('Y-m-d H:i:s')]);
             }
         });
+
+        self::unlock();
+    }
+
+    /**
+     * @return bool
+     */
+    private static function is_locked()
+    {
+        $lock_name = 'App\Console\Commands\CheckAndSend';
+        $lock = Locks::where('name', '=', $lock_name)->first();
+
+        if ($lock) {
+            return $lock->status;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     *
+     */
+    private static function unlock()
+    {
+        $lock_name = 'App\Console\Commands\CheckAndSend';
+        $lock = Locks::where('name', '=', $lock_name)->first();
+
+        if ($lock) {
+            $lock->status = false;
+            $lock->save();
+        } else {
+            $lock = new Locks([
+                'name'   => $lock_name,
+                'status' => false,
+            ]);
+            $lock->save();
+        }
+    }
+
+    /**
+     *
+     */
+    private static function lock()
+    {
+        $lock_name = 'App\Console\Commands\CheckAndSend';
+        $lock = Locks::where('name', '=', $lock_name)->first();
+
+        if ($lock) {
+            $lock->status = true;
+            $lock->save();
+        } else {
+            $lock = new Locks([
+                'name'   => $lock_name,
+                'status' => true,
+            ]);
+            $lock->save();
+        }
     }
 }
