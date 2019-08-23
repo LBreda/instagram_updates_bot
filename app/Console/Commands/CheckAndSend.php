@@ -69,21 +69,21 @@ class CheckAndSend extends Command
             $recipient = User::find($data->user_id);
             if ($response['status']) {
                 Telegram::sendMessage([
-                    'chat_id'    => $recipient->telegram_id,
-                    'text'       => "🤖 `OK! {$message}.`",
+                    'chat_id' => $recipient->telegram_id,
+                    'text' => "🤖 `OK! {$message}.`",
                     'parse_mode' => 'Markdown',
                 ]);
             } else {
                 Telegram::sendMessage([
-                    'chat_id'    => $recipient->telegram_id,
-                    'text'       => "🤖 `ERROR! {$message}.`",
+                    'chat_id' => $recipient->telegram_id,
+                    'text' => "🤖 `ERROR! {$message}.`",
                     'parse_mode' => 'Markdown',
                 ]);
             }
         });
 
         // Gets new posts
-        InstagramProfiles::get()->shuffle()->each(function (InstagramProfiles $instagram_profile) use ($client) {
+        InstagramProfiles::where('last_check', '<', Carbon::now()->subMinutes(30))->get()->shuffle()->slice(0, 100)->each(function (InstagramProfiles $instagram_profile) use ($client) {
             // Gets the profile page
             $request_time = Carbon::now();
             try {
@@ -91,10 +91,10 @@ class CheckAndSend extends Command
                 $options = [
                     'headers' => [
                         'User-Agent' => 'IGUD/' . \Config::get('app.version'),
-                        'Accept'     => '*/*',
+                        'Accept' => '*/*',
                     ],
                 ];
-                if(env('SOCKS5_HOST', false) and env('SOCKS5_PORT', false)) {
+                if (env('SOCKS5_HOST', false) and env('SOCKS5_PORT', false)) {
                     $options['proxy'] = 'socks5://' . env('SOCKS5_HOST') . ':' . env('SOCKS5_PORT');
                 }
                 $response = $client->request('GET', $url, $options);
@@ -108,7 +108,7 @@ class CheckAndSend extends Command
                         try {
                             $message = [
                                 'chat_id' => $user->telegram_id,
-                                'text'    => "🤖 Removed the {$instagram_profile->name}'s profile. It was probably deleted from Instagram or renamed.",
+                                'text' => "🤖 Removed the {$instagram_profile->name}'s profile. It was probably deleted from Instagram or renamed.",
                             ];
                             Telegram::sendMessage($message);
                         } catch (TelegramResponseException $e) {
@@ -123,21 +123,21 @@ class CheckAndSend extends Command
                     sleep(65);
                 } else {
                     $instagram_profile->last_error = json_encode([
-                        'date'      => Carbon::now(),
+                        'date' => Carbon::now(),
                         'exception' => $e->getMessage(),
                     ]);
                     $instagram_profile->save();
                 }
             } catch (ServerException $e) {
                 $instagram_profile->last_error = json_encode([
-                    'date'      => Carbon::now(),
+                    'date' => Carbon::now(),
                     'exception' => $e->getMessage(),
                 ]);
                 $instagram_profile->save();
                 $response = null;
             } catch (RequestException $e) {
                 $instagram_profile->last_error = json_encode([
-                    'date'      => Carbon::now(),
+                    'date' => Carbon::now(),
                     'exception' => $e->getMessage(),
                 ]);
                 $instagram_profile->save();
@@ -190,7 +190,7 @@ class CheckAndSend extends Command
                                 try {
                                     $message = [
                                         'chat_id' => $user->telegram_id,
-                                        'text'    => 'https://instagram.com/p/' . $medium->node->shortcode,
+                                        'text' => 'https://instagram.com/p/' . $medium->node->shortcode,
                                     ];
                                     Telegram::sendMessage($message);
                                     if ($this->option('verbose')) {
@@ -240,7 +240,7 @@ class CheckAndSend extends Command
             $lock->save();
         } else {
             $lock = new Locks([
-                'name'   => $lock_name,
+                'name' => $lock_name,
                 'status' => false,
             ]);
             $lock->save();
@@ -260,7 +260,7 @@ class CheckAndSend extends Command
             $lock->save();
         } else {
             $lock = new Locks([
-                'name'   => $lock_name,
+                'name' => $lock_name,
                 'status' => true,
             ]);
             $lock->save();
